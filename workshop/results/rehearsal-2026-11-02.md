@@ -29,3 +29,19 @@ Other beats:
   the agent left the decision to the human. The hook does not stop the commit.
 
 Not run: GitHub PR and CI on the sandbox copy, background agents, and interactive-only commands.
+
+## Full run, in presentation order
+
+Fresh clone, automated sessions, about $6 in total.
+
+- Round 1: three blind Opus lanes scored 4, 5, 6, and all passed `./scripts/check.sh`.
+- Round 2: `/spec` 32s, `spec.md` 40s, build 53s, 6/6.
+- `claude -w` starts from the current branch, so `git switch main` is required before Round 3.
+- Round 3: all four models 6/6, finished within 75s.
+- Round 4: the rule break committed, the hook returned red twice, and the agent asked the human to
+  choose. FREE100 stayed out of the shop code and the agent reported the comment.
+- Round 5: `/panel` 139s, $1.08, 4 raised, 4 confirmed.
+- Round 6: `/harvest` 73s, $0.28. Its two proposed rules took the blind rerun to 6, 6, 6 in 73s.
+
+Across all rehearsals, blind Opus failed rounding in 7 of 9 runs and code matching in 4. Two runs
+scored 6/6. Interactive-only commands are still untested.
