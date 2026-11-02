@@ -1,0 +1,4 @@
+# `git archive` leaves these out, so the agents never see the answers.
+workshop/ export-ignore
+README.md export-ignore
+.gitattributes export-ignore
