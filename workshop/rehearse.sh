@@ -20,7 +20,7 @@ cd "$live"
 i=1
 while [ "$i" -le "$runs" ]; do
   claude -p "$prompt" -w "$label-$i" --model "$model" --effort "$effort" \
-    --permission-mode acceptEdits --setting-sources project --strict-mcp-config \
+    --permission-mode auto --setting-sources project --strict-mcp-config \
     --output-format json > "$raw/$label-$i.json" 2> "$raw/$label-$i.err" &
   i=$((i + 1))
 done
@@ -35,8 +35,8 @@ import json, sys
 raw, label, runs = sys.argv[1], sys.argv[2], int(sys.argv[3])
 for i in range(1, runs + 1):
     try:
-        d = json.load(open(f"{raw}/{label}-{i}.json"))
-        print(f"{label}-{i}: {d['duration_ms']/1000:.0f}s  ${d.get('total_cost_usd', 0):.2f}  turns={d.get('num_turns')}")
+        d = json.loads(open(f"{raw}/{label}-{i}.json").read().strip().splitlines()[-1])
+        print(f"{label}-{i}: {d['duration_ms']/1000:.0f}s  ${d.get('total_cost_usd', 0):.2f}  turns={d.get('num_turns')}  denied={len(d.get('permission_denials', []))}")
     except Exception as e:
         print(f"{label}-{i}: no result ({e})")
 P

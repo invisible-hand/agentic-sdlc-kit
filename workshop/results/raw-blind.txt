@@ -1,0 +1,13 @@
+                                     blind-1    blind-2    blind-3
+No code or empty code: full price       pass       pass       pass
+SAVE10 takes 10% off                    pass       pass       pass
+Fractions go to the customer            FAIL       FAIL       FAIL
+save10 and ' SAVE10 ' work              FAIL       pass       FAIL
+Unknown code: clear 400                 pass       pass       pass
+A list of codes: 400, no crash          pass       pass       pass
+SCORE                             4/       6 5/       6 4/       6
+Lines added: code                         19         20         18
+Lines added: tests                        35         39         42
+blind-1: 67s  $0.35  turns=26
+blind-2: 73s  $0.38  turns=26
+blind-3: 82s  $0.40  turns=27

@@ -1,0 +1,13 @@
+                                      spec-1     spec-2     spec-3
+No code or empty code: full price       pass       pass       pass
+SAVE10 takes 10% off                    pass       pass       pass
+Fractions go to the customer            pass       pass       pass
+save10 and ' SAVE10 ' work              pass       pass       pass
+Unknown code: clear 400                 pass       pass       pass
+A list of codes: 400, no crash          pass       pass       pass
+SCORE                             6/       6 6/       6 6/       6
+Lines added: code                         27         25         28
+Lines added: tests                        32         27         32
+spec-1: 81s  $0.40  turns=27
+spec-2: 73s  $0.37  turns=24
+spec-3: 71s  $0.38  turns=33

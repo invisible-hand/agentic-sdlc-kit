@@ -80,12 +80,12 @@ def main() -> None:
         for name, cases in CHECKS:
             rows[name].append(all(passes(probe(lane, p), e) for p, e in cases))
     width = max(len(n) for n in rows)
-    heads = [lane.name[:10] for lane in lanes]
+    heads = [lane.name[-10:] for lane in lanes]
     print(" " * width, *[f"{h:>10}" for h in heads])
     for name, results in rows.items():
         print(f"{name:<{width}}", *[f"{'pass' if r else 'FAIL':>10}" for r in results])
     scores = [sum(r[i] for r in rows.values()) for i in range(len(lanes))]
-    print(f"{'SCORE':<{width}}", *[f"{s}/{len(CHECKS):>8}" for s in scores])
+    print(f"{'SCORE':<{width}}", *[f"{f'{s}/{len(CHECKS)}':>10}" for s in scores])
     sizes = [added_lines(lane) for lane in lanes]
     print(f"{'Lines added: code':<{width}}", *[f"{c:>10}" for c, _ in sizes])
     print(f"{'Lines added: tests':<{width}}", *[f"{t:>10}" for _, t in sizes])
