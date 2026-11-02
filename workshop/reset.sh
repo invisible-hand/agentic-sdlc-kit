@@ -8,6 +8,7 @@ if [ -e "$live" ]; then
   rm -rf "$live"
 fi
 git clone -q "$repo" "$live"
+git -C "$live" remote remove origin   # a push must never reach the zero-state repo
 touch "$live/.git/sandbox"
 (cd "$live" && uv sync --quiet --extra dev && ./scripts/check.sh > /dev/null) \
   || { echo "sandbox checks are red" >&2; exit 1; }
