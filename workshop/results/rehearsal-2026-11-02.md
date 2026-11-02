@@ -12,7 +12,7 @@ as reported by Claude Code. Samples are small.
 | Spec | Sonnet, medium | 2 | 6, 6 | 41-51s | $0.08-0.11 |
 | Spec | Opus, medium | 2 | 6, 6 | 74-82s | $0.31-0.35 |
 | Spec | Fable, medium | 2 | 6, 6 | 67-114s | $0.35-0.63 |
-| `/spec` flow, then build | Opus, medium | 1 | 6 | 128s for all three steps | $0.80 |
+| `/spec` flow, then build | Opus, medium | 1 | 6 | 128s for all three steps | $0.81 |
 | Rerun with two rules added | Opus, medium | 3 | 6, 6, 6 | 49-63s | $0.26-0.34 |
 
 Every spec run across the rehearsals scored 6/6, including an earlier batch of 11 that ran with

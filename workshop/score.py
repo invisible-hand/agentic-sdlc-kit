@@ -10,15 +10,30 @@ import sys
 from pathlib import Path
 
 CHECKS = [
-    ("No code or empty code: full price", [({"items": {"mug": 1}}, 1250),
-                                           ({"items": {"mug": 1}, "promo_code": ""}, 1250)]),
+    (
+        "No code or empty code: full price",
+        [({"items": {"mug": 1}}, 1250), ({"items": {"mug": 1}, "promo_code": ""}, 1250)],
+    ),
     ("SAVE10 takes 10% off", [({"items": {"mug": 1}, "promo_code": "SAVE10"}, 1125)]),
-    ("Fractions go to the customer", [({"items": {"tshirt": 9}, "promo_code": "SAVE10"}, 16191),
-                                      ({"items": {"poster": 1}, "promo_code": "SAVE10"}, 719)]),
-    ("save10 and ' SAVE10 ' work", [({"items": {"mug": 1}, "promo_code": "save10"}, 1125),
-                                    ({"items": {"mug": 1}, "promo_code": " SAVE10 "}, 1125)]),
+    (
+        "Fractions go to the customer",
+        [
+            ({"items": {"tshirt": 9}, "promo_code": "SAVE10"}, 16191),
+            ({"items": {"poster": 1}, "promo_code": "SAVE10"}, 719),
+        ],
+    ),
+    (
+        "save10 and ' SAVE10 ' work",
+        [
+            ({"items": {"mug": 1}, "promo_code": "save10"}, 1125),
+            ({"items": {"mug": 1}, "promo_code": " SAVE10 "}, 1125),
+        ],
+    ),
     ("Unknown code: clear 400", [({"items": {"mug": 1}, "promo_code": "NOPE"}, "reject")]),
-    ("A list of codes: 400, no crash", [({"items": {"mug": 1}, "promo_code": ["SAVE10"]}, "reject")]),
+    (
+        "A list of codes: 400, no crash",
+        [({"items": {"mug": 1}, "promo_code": ["SAVE10"]}, "reject")],
+    ),
 ]
 
 PROBE = """
@@ -33,9 +48,16 @@ except Exception as e:
 
 def probe(lane: Path, payload: dict) -> dict:
     run = subprocess.run(
-        [sys.executable, "-I", "-c", f"import sys; sys.path.insert(0, {str(lane)!r})\n{PROBE}",
-         json.dumps(payload)],
-        capture_output=True, text=True, timeout=20,
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            f"import sys; sys.path.insert(0, {str(lane)!r})\n{PROBE}",
+            json.dumps(payload),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=20,
     )
     try:
         return json.loads(run.stdout.strip().splitlines()[-1])
@@ -55,11 +77,13 @@ def passes(response: dict, expected) -> bool:
 
 def added_lines(lane: Path) -> tuple[int, int]:
     git = ["git", "-C", str(lane)]
-    root = subprocess.run([*git, "rev-list", "--max-parents=0", "HEAD"],
-                          capture_output=True, text=True).stdout.split()[-1]
+    root = subprocess.run(
+        [*git, "rev-list", "--max-parents=0", "HEAD"], capture_output=True, text=True
+    ).stdout.split()[-1]
     subprocess.run([*git, "add", "-N", "shop", "tests"], capture_output=True)
-    out = subprocess.run([*git, "diff", "--numstat", root, "--", "shop", "tests"],
-                         capture_output=True, text=True).stdout
+    out = subprocess.run(
+        [*git, "diff", "--numstat", root, "--", "shop", "tests"], capture_output=True, text=True
+    ).stdout
     code = tests = 0
     for line in out.splitlines():
         added, _, path = line.split("\t")
