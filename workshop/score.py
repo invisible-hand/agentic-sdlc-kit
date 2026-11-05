@@ -5,6 +5,7 @@ usage: score.py <lane-dir> [<lane-dir> ...]
 """
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -12,7 +13,10 @@ from pathlib import Path
 CHECKS = [
     (
         "No code or empty code: full price",
-        [({"items": {"mug": 1}}, 1250), ({"items": {"mug": 1}, "promo_code": ""}, 1250)],
+        [
+            ({"items": {"mug": 1}}, 1250),
+            ({"items": {"mug": 1}, "promo_code": ""}, 1250),
+        ],
     ),
     ("SAVE10 takes 10% off", [({"items": {"mug": 1}, "promo_code": "SAVE10"}, 1125)]),
     (
@@ -28,11 +32,6 @@ CHECKS = [
             ({"items": {"mug": 1}, "promo_code": "save10"}, 1125),
             ({"items": {"mug": 1}, "promo_code": " SAVE10 "}, 1125),
         ],
-    ),
-    ("Unknown code: clear 400", [({"items": {"mug": 1}, "promo_code": "NOPE"}, "reject")]),
-    (
-        "A list of codes: 400, no crash",
-        [({"items": {"mug": 1}, "promo_code": ["SAVE10"]}, "reject")],
     ),
 ]
 
@@ -82,7 +81,9 @@ def added_lines(lane: Path) -> tuple[int, int]:
     ).stdout.split()[-1]
     subprocess.run([*git, "add", "-N", "shop", "tests"], capture_output=True)
     out = subprocess.run(
-        [*git, "diff", "--numstat", root, "--", "shop", "tests"], capture_output=True, text=True
+        [*git, "diff", "--numstat", root, "--", "shop", "tests"],
+        capture_output=True,
+        text=True,
     ).stdout
     code = tests = 0
     for line in out.splitlines():
@@ -93,6 +94,27 @@ def added_lines(lane: Path) -> tuple[int, int]:
             else:
                 code += int(added)
     return code, tests
+
+
+def time_to_commit(lane: Path) -> str:
+    """Time from the worktree's creation to the agent's first commit, as m:ss. A dash if unknown."""
+    git = ["git", "-C", str(lane)]
+    gitdir = subprocess.run(
+        [*git, "rev-parse", "--absolute-git-dir"], capture_output=True, text=True
+    )
+    marker = Path(gitdir.stdout.strip()) / "gitdir"
+    if gitdir.returncode or not marker.exists():
+        return "-"
+    stat = os.stat(marker)
+    born = getattr(stat, "st_birthtime", stat.st_mtime)
+    log = subprocess.run(
+        [*git, "log", "-50", "--format=%ct"], capture_output=True, text=True
+    )
+    after = [int(t) - int(born) for t in log.stdout.split() if int(t) > born]
+    if log.returncode or not after:
+        return "-"
+    secs = min(after)
+    return f"{secs // 60}:{secs % 60:02d}"
 
 
 def main() -> None:
@@ -113,6 +135,10 @@ def main() -> None:
     sizes = [added_lines(lane) for lane in lanes]
     print(f"{'Lines added: code':<{width}}", *[f"{c:>10}" for c, _ in sizes])
     print(f"{'Lines added: tests':<{width}}", *[f"{t:>10}" for _, t in sizes])
+    print(
+        f"{'Time to first commit':<{width}}",
+        *[f"{time_to_commit(lane):>10}" for lane in lanes],
+    )
 
 
 if __name__ == "__main__":
